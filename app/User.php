@@ -4,11 +4,12 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-
+    use Notifiable, SoftDeletes;
+ use SoftDeletes;
     const VERIFIED_USER ='1';
     const UNVERIFIED_USER ='0';
 
@@ -16,6 +17,7 @@ class User extends Authenticatable
     const REGULAR_USER ='false';
 
     protected $table = 'users';
+    protected $dates = ['deleted_at'];
 
     /**
      * The attributes that are mass assignable.
@@ -41,6 +43,32 @@ class User extends Authenticatable
         'remember_token',
         'verification_token',
     ];
+
+
+
+    public function setNameAttribute($name)
+    {
+
+        $this->attributes['name'] = strtolower($name);
+    }
+
+
+    public function getNameAttribute($name)
+    {
+
+       return ucwords($name);
+    }
+
+
+    public function setEmailAttribute($email)
+    {
+
+        $this->attributes['email'] = strtolower($email);
+    }
+
+    
+
+
     public function isVerified()
     {
         return $this->verified == User::VERIFIED_USER;

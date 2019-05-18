@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\User;
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
+use App\Http\Controllers\ApiController;
 use App\User;
 
-class UserController extends Controller
+class UserController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -18,7 +18,7 @@ class UserController extends Controller
         //
         $users = User::all();
 
-        return response()->json(['data' =>$users], 200);
+        return $this->showAll($users);
     }
 
     /**
@@ -54,7 +54,7 @@ class UserController extends Controller
         $data['admin'] = User::REGULAR_USER;
 
         $user = User::create($data);
-        return response()->json(['data' =>$user], 201);
+        return$this->showOne($user, 201);
     }
 
     /**
@@ -63,12 +63,12 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
         //
-        $user = User::findOrFail($id);
+      
 
-        return response()->json(['data' =>$user], 200);
+        return $this->showOne($user);
     }
 
     /**
@@ -89,11 +89,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user)
     {
         //
 
-        $user = User::findOrFail($id);
+        //$user = User::findOrFail($id);
 
         $rules = [
             'email' => 'email|unique:users,email,'. $user->id,
@@ -114,16 +114,16 @@ class UserController extends Controller
         }
         if ($request->has('admin')) {
             if (!$user->isVerified()) {
-                response()->json(['error' => 'Only verified users can modify the admin field', 'code' => 409], 409);
+                return $this->errorResponse('Only verified users can modify the admin field', 409);
             }
             $user->admin = $request->admin;
         }
         if(!$user->isDirty()){
-            response()->json(['error' => 'You need to specify a diffrent value to update', 'code' => 422], 422);
+            return $this->errorResponse('You need to specify a diffrent value to update', 422);
 
         }
         $user->save();
-        return response()->json(['data' =>$user], 200);
+        return $this->showOne($user);
     }
 
     /**
@@ -132,12 +132,11 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
         //
-        $user = User::findOrFail($id);
         $user->delete();
-        return response()->json(['data' =>$user], 200);
+        return $this->showOne($user);
 
     }
 }
