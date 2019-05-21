@@ -3,6 +3,7 @@
 namespace App;
 use App\Buyer;
 use App\Product;
+use App\Category;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Illuminate\Database\Eloquent\Model;
@@ -26,5 +27,9 @@ class Transaction extends Model
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

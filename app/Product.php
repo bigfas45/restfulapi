@@ -4,6 +4,7 @@ namespace App;
 use App\Seller;
 use App\Category;
 use App\Transaction;
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -24,7 +25,9 @@ class Product extends Model
         'image',
         'seller_id',
     ];
-
+    protected $hidden = [
+        'pivot'
+    ];
     public function isAvailable()
     {
         return $this->status == Product::AVAILABLE_PRODUCT;
@@ -33,7 +36,7 @@ class Product extends Model
     {
         return $this->belongsTo(Seller::class);
     }
-    public function trancations()
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }
